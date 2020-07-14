@@ -13,4 +13,6 @@ const firebaseConfig = {
 
 const app = firebase.initializeApp(firebaseConfig)
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 export const db = app.firestore()

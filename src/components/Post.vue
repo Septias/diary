@@ -9,11 +9,10 @@
     <section
       v-if="entry.today"
       contenteditable="true"
-      ref="textBox"
-      @click="selected = true"
+      @focus="selected = true"
       @input="handleInput"
       @blur="selected = false"
-      @select="handleSelect"
+      @click="handleClick"
       v-html="entry.body"
     />
     <section
@@ -23,9 +22,27 @@
   </div>
 </template>
 
+<style lang="sass" scoped>
+.selected
+  padding: 18px 28px 28px
+  margin: 0px 0px 10px 0px
+
+.not-selected
+  padding: 18px
+  margin: 0px 10px 10px
+
+.post
+  transition: padding .3s, margin .3s
+
+.body--dark .post
+  background: #262626
+</style>
+
 <script lang="ts">
 import outsideClick from '../directives/outsideClick'
-import { defineComponent, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, ref } from '@vue/composition-api'
+import { Tag } from './Tag'
+
 export default defineComponent({
   name: 'Entry',
   directives: {
@@ -43,39 +60,29 @@ export default defineComponent({
     function unselect () {
       selected.value = false
     }
-    let timer = null
-    function handleSelect () {
-      console.log('selected')
+    let timer: NodeJS.Timeout
+    function handleClick () {
+      const sel = window.getSelection()
+
+      if (sel && sel.type !== 'Caret') {
+        const tag = new Tag()
+        tag.range = sel.getRangeAt(0)
+        context.emit('createdTag', tag)
+        tag.el.addEventListener('click', () => {
+          context.emit('selectedTag', tag)
+        })
+      }
     }
-    onMounted(() => {
-      console.log(context.refs.textBox.addEventListener('select'))
-    })
     function handleInput (e) {
       if (e.target.innerText.length > 10) {
         clearTimeout(timer)
         timer = setTimeout(() => {
           context.emit('saveEntry', { ...props.entry, body: e.target.innerText })
-        }, 300)
+        }, 1500)
       }
     }
 
-    return { selected, unselect, handleInput, handleSelect }
+    return { selected, unselect, handleInput, handleClick }
   }
 })
 </script>
-
-<style lang="sass" scoped>
-.selected
-  padding: 18px 28px 28px
-  margin: 0px 0px 10px 0px
-
-.not-selected
-  padding: 18px
-  margin: 0px 10px 10px
-
-.post
-  transition: padding .3s, margin .3s
-
-.body--dark .post
-  background: #262626
-</style>

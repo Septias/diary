@@ -3,7 +3,7 @@ import { RouteConfig } from 'vue-router'
 const routes: RouteConfig[] = [
   {
     path: '/',
-    component: () => import('pages/Index.vue')
+    component: () => import('pages/Diary.vue')
   }
 ]
 

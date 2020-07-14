@@ -1,50 +1,55 @@
 
 import Vue from 'vue'
 
-let handleOutsideClick
+const handleOutsideClick = {}
+
+function hasSomeParentTheClass (element, classname) {
+  if (element.className === undefined) return
+  if (element.className.split(' ').indexOf(classname) >= 0) return true
+  return element.parentNode && hasSomeParentTheClass(element.parentNode, classname)
+}
 
 export default Vue.directive('outsideClick', {
-  bind (el, binding, vnode) {
-    // Here's the click/touchstart handler
-    // (it is registered below)
-    handleOutsideClick = (e) => {
+  // this directive is run on the bind and unbind hooks
+  bind (el, binding) {
+    // Define the function to be called on click, filter the excludes and call the handler
+    handleOutsideClick[el.id] = e => {
       e.stopPropagation()
-      // Get the handler method name and the exclude array
-      // from the object used in v-closable
+      // extract the handler and exclude from the binding value
       const { handler, exclude } = binding.value
-
-      // This variable indicates if the clicked element is excluded
+      // set variable to keep track of if the clicked element is in the exclude list
       let clickedOnExcludedEl = false
-      exclude.forEach(refName => {
-        // We only run this code if we haven't detected
-        // any excluded element yet
-        if (!clickedOnExcludedEl) {
-          // Get the element using the reference name
-          const excludedEl = vnode.context.$refs[refName]
-          // See if this excluded element
-          // is the same element the user just clicked on
-          clickedOnExcludedEl = excludedEl.contains(e.target)
-        }
-      })
+      // if the target element has no classes, it won't be in the exclude list skip the check
 
-      // We check to see if the clicked element is not
-      // the dialog element and not excluded
-      if (!el.contains(e.target) && !clickedOnExcludedEl) {
-        // If the clicked element is outside the dialog
-        // and not the button, then call the outside-click handler
-        // from the same component this directive is used in
-        vnode.context[handler]()
+      // for each exclude name check if it matches any of the target element's classes
+      for (const className of exclude) {
+        clickedOnExcludedEl = hasSomeParentTheClass(e.target, className)
+        if (clickedOnExcludedEl) {
+          break // once we have found one match, stop looking
+        }
+      }
+
+      // don't call the handler if our directive element contains the target element
+      // or if the element was in the exclude list
+      if (!(el.contains(e.target) || clickedOnExcludedEl)) {
+        handler()
       }
     }
-    // Register click/touchstart event listeners on the whole page
-    document.addEventListener('click', handleOutsideClick)
-    document.addEventListener('touchstart', handleOutsideClick)
+    // Register our outsideClick handler on the click/touchstart listeners
+    document.addEventListener('click', handleOutsideClick[el.id])
+    document.addEventListener('touchstart', handleOutsideClick[el.id])
+    document.onkeydown = e => {
+      // this is an option but may not work right with multiple handlers
+      if (e.keyCode === 27) {
+        // TODO: there are minor issues when escape is clicked right after open keeping the old target
+        handleOutsideClick[el.id](e)
+      }
+    }
   },
-
-  unbind () {
-    // If the element that has v-closable is removed, then
-    // unbind click/touchstart listeners from the whole page
-    document.removeEventListener('click', handleOutsideClick)
-    document.removeEventListener('touchstart', handleOutsideClick)
+  unbind (el) {
+    // If the element that has v-outside-click is removed, unbind it from listeners
+    document.removeEventListener('click', handleOutsideClick[el.id])
+    document.removeEventListener('touchstart', handleOutsideClick[el.id])
+    document.onkeydown = null // Note that this may not work with multiple listeners
   }
 })
