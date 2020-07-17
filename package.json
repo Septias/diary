@@ -18,6 +18,7 @@
     "@vue/composition-api": "^0.5.0",
     "axios": "^0.18.1",
     "firebase": "^7.16.0",
+    "lodash": "^4.17.19",
     "quasar": "^1.9.5",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.0.0",

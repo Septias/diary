@@ -1,17 +1,20 @@
 <template>
   <div
-    class="shadow-3 post text-body1 q-mb-md"
+    class="shadow-3 post text-body1 q-mb-md OCE-post"
     :class="selected ? 'selected': 'not-selected'"
   >
-    <h6 class="q-my-none">
+    <h6
+      class="q-my-none"
+    >
       {{ entry.time.toDate().toLocaleDateString() }}
     </h6>
     <section
+      id="oc-post"
+      v-outsideClick="{exclude: ['OCE-post'], handler: unselect}"
       v-if="entry.today"
       contenteditable="true"
       @focus="selected = true"
       @input="handleInput"
-      @blur="selected = false"
       @click="handleClick"
       v-html="entry.body"
     />
@@ -41,7 +44,11 @@
 <script lang="ts">
 import outsideClick from '../directives/outsideClick'
 import { defineComponent, ref } from '@vue/composition-api'
-import { Tag } from './Tag'
+import Mark from './Mark'
+import MarkData from './TagData'
+import Vue from 'vue'
+
+const MarkClass = Vue.extend(Mark)
 
 export default defineComponent({
   name: 'Entry',
@@ -54,22 +61,34 @@ export default defineComponent({
       required: true
     }
   },
-
   setup (props, context) {
     const selected = ref(false)
     function unselect () {
       selected.value = false
     }
+    const color = ref('#ff0000')
+
     let timer: NodeJS.Timeout
     function handleClick () {
       const sel = window.getSelection()
-
-      if (sel && sel.type !== 'Caret') {
-        const tag = new Tag()
-        tag.range = sel.getRangeAt(0)
-        context.emit('createdTag', tag)
-        tag.el.addEventListener('click', () => {
-          context.emit('selectedTag', tag)
+      if (sel && sel.type === 'Range') {
+        const range = sel.getRangeAt(0)
+        const elem = document.createElement('div')
+        range.surroundContents(elem)
+        const tagData: MarkData = {
+          shownTagType: { color: '#aa00aa' },
+          tagTypes: undefined
+        }
+        const tag = new MarkClass({
+          propsData: {
+            tagData,
+            content: elem.innerHTML
+          }
+        })
+        tag.$mount(elem)
+        context.emit('createdTag', tagData)
+        tag.$el.addEventListener('click', () => {
+          context.emit('selectedTag', tagData)
         })
       }
     }
@@ -82,7 +101,7 @@ export default defineComponent({
       }
     }
 
-    return { selected, unselect, handleInput, handleClick }
+    return { selected, unselect, handleInput, handleClick, color }
   }
 })
 </script>

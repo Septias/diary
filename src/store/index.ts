@@ -2,7 +2,6 @@ import { store } from 'quasar/wrappers'
 import Vuex from 'vuex'
 
 import example from './module-example'
-import { ExampleStateInterface } from './module-example/state'
 
 /*
  * If not building with SSR mode, you can
@@ -10,7 +9,7 @@ import { ExampleStateInterface } from './module-example/state'
  */
 
 export interface StoreInterface {
-  example: ExampleStateInterface;
+  darkMode: boolean | null;
 }
 
 export default store(function ({ Vue }) {
@@ -20,7 +19,6 @@ export default store(function ({ Vue }) {
     modules: {
       example
     },
-
     strict: !!process.env.DEV
   })
 

@@ -58,7 +58,7 @@ module.exports = configure(function (ctx) {
       // (from node_modules, which are by default not transpiled).
       // Does not applies to modern builds.
       // transpileDependencies: [],
-
+      // devtool: 'source-map',
       // modern: true, // https://quasar.dev/quasar-cli/modern-build
       // rtl: false, // https://quasar.dev/options/rtl-support
       // preloadChunks: true,

@@ -18,6 +18,7 @@ const entries = ref([] as Entry[])
 
 async function fetchEntries () {
   const querySnapshot = await db.collection('entries').orderBy('time', 'desc').get()
+  entries.value = []
   querySnapshot.forEach((entry: QueryDocumentSnapshot) => {
     if (entry.exists) {
       entries.value.push({
@@ -44,9 +45,9 @@ async function fetchEntries () {
 }
 
 function saveEntry (entry: Entry) {
-  entry.ref.update({ body: entry.body }).catch(function () {
+  /*  entry.ref.update({ body: entry.body }).catch(function () {
     entry.ref.set({ body: entry.body, time: entry.time })
-  })
+  }) */
 }
 
 export function useDiary () {

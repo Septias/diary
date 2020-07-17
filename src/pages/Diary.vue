@@ -4,7 +4,7 @@
     <q-icon
       :name="$q.dark.isActive ? 'brightness_5': 'brightness_3'"
       class="darkmode-toggle"
-      @click="toggleDarkmode"
+      @click="toggleDarkMode"
     />
     <div
       class="column q-px-md"
@@ -22,7 +22,7 @@
               v-for="entry in entries"
               :entry="entry"
               :key="entry.id"
-              class="outside-click-exclude"
+              class="OCE-tagEditor"
               @saveEntry="saveEntry"
               @selectedTag="(tag) => activeTag = tag"
               @createdTag="(tag) => activeTag = tag"
@@ -31,10 +31,12 @@
         </div>
         <div>
           <TagEditor
-            id="tageEditor"
+            id="oc-tagEditor"
+            class="OCE-post"
             v-if="activeTag"
-            :tag="activeTag"
-            v-outsideClick="{exclude: ['outside-click-exclude'], handler: outSideClickHandler}"
+            :showntagtype.sync="activeTag.shownTagType"
+            :tagtypes.sync="activeTag.tagTypes"
+            v-outsideClick="{exclude: ['OCE-tagEditor'], handler: outSideClickHandler}"
           />
         </div>
       </div>
@@ -47,6 +49,7 @@ import { defineComponent, ref, onMounted } from '@vue/composition-api'
 import Post from '../components/Post'
 import TagEditor from '../components/TagEditor'
 import { useDiary } from '../services/Diary'
+import useDarkMode from '../components/useDarkMode'
 
 export default defineComponent({
   name: 'Diary',
@@ -54,17 +57,16 @@ export default defineComponent({
     Post,
     TagEditor
   },
-  setup (context) {
-    function toggleDarkmode () {
-      context.root.$q.dark.toggle()
-    }
+  setup () {
+    const { toggleDarkMode } = useDarkMode()
     const activeTag = ref(null)
     const { entries, fetchEntries, saveEntry } = useDiary()
     onMounted(() => { fetchEntries() })
     function outSideClickHandler () {
       activeTag.value = null
     }
-    return { toggleDarkmode, entries, saveEntry, activeTag, outSideClickHandler }
+    const test = ref(1)
+    return { toggleDarkMode, entries, saveEntry, activeTag, outSideClickHandler, test }
   }
 })
 </script>
