@@ -65,8 +65,7 @@ export default defineComponent({
     function outSideClickHandler () {
       activeTag.value = null
     }
-    const test = ref(1)
-    return { toggleDarkMode, entries, saveEntry, activeTag, outSideClickHandler, test }
+    return { toggleDarkMode, entries, saveEntry, activeTag, outSideClickHandler }
   }
 })
 </script>

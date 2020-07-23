@@ -25,7 +25,6 @@ export default function useTagTypeSearch (props, context) {
   function handleKeyDown (e: KeyboardEvent) {
     if (e.code === 'ArrowRight' || e.code === 'ArrowLeft' || e.code === 'Tab') {
       if (props.hoveredtagtype.name === 'default') {
-        console.log(shownTagTypes.value[0])
         context.emit('update:hoveredtagtype', shownTagTypes.value[0])
       } else if (e.code === 'ArrowRight' || e.code === 'Tab') {
         context.emit('update:hoveredtagtype', shownTagTypes.value[(shownTagTypes.value.indexOf(props.hoveredtagtype) + 1) % shownTagTypes.value.length])

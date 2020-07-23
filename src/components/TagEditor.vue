@@ -33,6 +33,7 @@
         <q-color
           class="OCE-tagEditor"
           v-model="hex"
+          @change="(val) => {hoveredtagtype.setColor(val)}"
           no-header
           no-footer
           default-view="palette"
@@ -65,7 +66,7 @@
 </style>
 
 <script lang="ts">
-import { ref, defineComponent, PropType, watch } from '@vue/composition-api'
+import { ref, defineComponent, PropType } from '@vue/composition-api'
 import TagChip from './TagChip'
 import useTagTypesSearch from './useTagTypeSearch'
 import { TagType, defaultTag } from '../services/TagTypeService'
@@ -89,11 +90,6 @@ export default defineComponent({
     const popup = ref(true)
     const { inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes } = useTagTypesSearch(props, context)
     const hex = ref('')
-    watch(hex, () => {
-      if (props.hoveredtagtype) {
-        props.hoveredtagtype.setColor(hex.value)
-      }
-    })
     return { popup, hex, inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes }
   }
 })

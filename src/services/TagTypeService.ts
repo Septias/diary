@@ -19,6 +19,7 @@ export class TagType {
   setColor (color: string) {
     this.color = color
     if (this.ref) {
+      console.log(color)
       this.ref.update({ color: color })
     }
   }
