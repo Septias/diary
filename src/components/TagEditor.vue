@@ -1,7 +1,6 @@
 <template>
   <div
     class="shadow-3 rounded q-pa-md tag-editor row no-wrap"
-    @keydown="handleKeyDown"
   >
     <div>
       <input
@@ -9,24 +8,24 @@
         type="text"
         class="q-mb-sm"
         v-model="inputField"
-        @input="handleInput"
+        @keydown="handleKeyDown"
       >
       <TagChip
         class="tag-chip q-mr-sm"
         v-for="(tag, i) in shownTagTypes"
         :key="tag.name"
         :tag="tag"
-        :hover="hoveredTagType == i"
+        :hover="hoveredtagtype == tag"
         :tabindex="i"
-        :selected="selectedTagTypes.find(_tag => _tag == tag)? true : false"
-        @click.native="() => {handleChipClick(i)}"
+        :selected="selectedtagtypes.find(_tag => _tag == tag)? true : false"
+        @click.native="() => {handleChipClick(tag)}"
       />
       <div />
     </div>
 
     <div
       id="colorPicker"
-      :style="hoveredTagTypeObj? {background: hoveredTagTypeObj.color} : ''"
+      :style="hoveredtagtype? {background: hoveredtagtype.color} : ''"
     >
       <q-popup-edit
         v-model="popup"
@@ -65,11 +64,11 @@
   color: white
 </style>
 
-<script>
-import { ref, defineComponent, watch, computed, PropType } from '@vue/composition-api'
+<script lang="ts">
+import { ref, defineComponent, PropType, watch } from '@vue/composition-api'
 import TagChip from './TagChip'
 import useTagTypesSearch from './useTagTypeSearch'
-import MarkData from './MarkData'
+import { TagType, defaultTag } from '../services/TagTypeService'
 
 export default defineComponent({
   name: 'TagEditor',
@@ -77,26 +76,25 @@ export default defineComponent({
     TagChip
   },
   props: {
-    showntagtype: Object,
-    tagypes: Object
+    hoveredtagtype: {
+      type: Object as unknown as PropType<TagType>,
+      default: () => defaultTag
+    },
+    selectedtagtypes: {
+      type: Array as unknown as PropType<TagType[]>,
+      default: () => []
+    }
   },
   setup (props, context) {
     const popup = ref(true)
-    const { inputField, handleInput, hoveredTagType, handleKeyDown, handleChipClick, selectedTagTypes, tagTypes, shownTagTypes } = useTagTypesSearch()
+    const { inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes } = useTagTypesSearch(props, context)
     const hex = ref('')
-    const hoveredTagTypeObj = computed(() => shownTagTypes.value[hoveredTagType.value])
-    watch(hoveredTagTypeObj, function () {
-      if (hoveredTagTypeObj.value) {
-        context.emit('update:showntagtype', hoveredTagTypeObj.value)
-      }
-    })
     watch(hex, () => {
-      if (hoveredTagTypeObj.value) {
-        hoveredTagTypeObj.value.setColor(hex.value)
+      if (props.hoveredtagtype) {
+        props.hoveredtagtype.setColor(hex.value)
       }
     })
-    watch()
-    return { popup, hex, inputField, handleInput, hoveredTagType, handleKeyDown, handleChipClick, selectedTagTypes, tagTypes, shownTagTypes, hoveredTagTypeObj }
+    return { popup, hex, inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes }
   }
 })
 </script>

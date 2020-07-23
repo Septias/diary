@@ -34,8 +34,8 @@
             id="oc-tagEditor"
             class="OCE-post"
             v-if="activeTag"
-            :showntagtype.sync="activeTag.shownTagType"
-            :tagtypes.sync="activeTag.tagTypes"
+            :hoveredtagtype.sync="activeTag.shownTagType"
+            :selectedtagtypes.sync="activeTag.tagTypes"
             v-outsideClick="{exclude: ['OCE-tagEditor'], handler: outSideClickHandler}"
           />
         </div>

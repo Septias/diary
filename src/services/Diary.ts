@@ -45,9 +45,9 @@ async function fetchEntries () {
 }
 
 function saveEntry (entry: Entry) {
-  /*  entry.ref.update({ body: entry.body }).catch(function () {
+  entry.ref.update({ body: entry.body }).catch(function () {
     entry.ref.set({ body: entry.body, time: entry.time })
-  }) */
+  })
 }
 
 export function useDiary () {

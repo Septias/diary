@@ -45,8 +45,9 @@
 import outsideClick from '../directives/outsideClick'
 import { defineComponent, ref } from '@vue/composition-api'
 import Mark from './Mark'
-import MarkData from './TagData'
+import MarkData from './MarkData'
 import Vue from 'vue'
+import { defaultTag } from '../services/TagTypeService'
 
 const MarkClass = Vue.extend(Mark)
 
@@ -76,8 +77,8 @@ export default defineComponent({
         const elem = document.createElement('div')
         range.surroundContents(elem)
         const tagData: MarkData = {
-          shownTagType: { color: '#aa00aa' },
-          tagTypes: undefined
+          shownTagType: defaultTag,
+          tagTypes: []
         }
         const tag = new MarkClass({
           propsData: {

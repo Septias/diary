@@ -7,10 +7,10 @@ type DocumentReference = firebase.firestore.DocumentReference
 type QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot
 
 export class TagType {
-  public ref: DocumentReference
+  public ref?: DocumentReference
   public name: string
   public color: string
-  constructor (ref: DocumentReference, name: string, color: string) {
+  constructor (name: string, color: string, ref?: DocumentReference) {
     this.ref = ref
     this.name = name
     this.color = color
@@ -18,9 +18,13 @@ export class TagType {
 
   setColor (color: string) {
     this.color = color
-    this.ref.update({ color: color })
+    if (this.ref) {
+      this.ref.update({ color: color })
+    }
   }
 }
+
+export const defaultTag = new TagType('default', '#aaaaaa')
 
 const tagTypeConverter = {
   toFirestore: function (tagType: TagType) {
@@ -31,14 +35,14 @@ const tagTypeConverter = {
   },
   fromFirestore: function (snapshot, options) {
     const data = snapshot.data(options)
-    return new TagType(snapshot.ref, data.name, data.color)
+    return new TagType(data.name, data.color, snapshot.ref)
   }
 }
 
 const tagTypes = ref([] as TagType[])
 
 function createTag ({ name }) {
-  const tagType = new TagType(db.collection('tag-types').doc(name), name, '#000000')
+  const tagType = new TagType(name, '#000000', db.collection('tag-types').doc(name))
   db.collection('tag-types').doc(name).withConverter(tagTypeConverter).set(tagType)
   tagTypes.value.push(tagType)
 }

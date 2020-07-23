@@ -2,46 +2,40 @@
 import { computed, ref } from '@vue/composition-api'
 import { useTagTypes, TagType } from '../services/TagTypeService'
 
-export default function useTagTypeSearch () {
+export default function useTagTypeSearch (props, context) {
   const { tagTypes, createTag } = useTagTypes()
-  const selectedTagTypes = ref([] as TagType[])
   const inputField = ref('')
-  const hoveredTagType = ref(null as unknown as number | undefined)
 
   const shownTagTypes = computed(() => {
-    return tagTypes.value.filter(tagType => selectedTagTypes.value.find((tag) => tag === tagType) || tagType.name.includes(inputField.value)).slice(0, 5)
+    return tagTypes.value.filter(tagType => props.selectedtagtypes.find((tag) => tag === tagType) || tagType.name.includes(inputField.value)
+    ).slice(0, 5)
   })
 
-  function getTagObj (id: number): TagType {
-    return shownTagTypes.value[id]
-  }
-  function handleChipClick (i: number) {
-    const tagObj = getTagObj(i)
-    if (selectedTagTypes.value.find(tag => tag === tagObj)) {
-      selectedTagTypes.value.splice(selectedTagTypes.value.indexOf(tagObj), 1)
-      if (hoveredTagType.value === i) {
-        hoveredTagType.value = undefined
-      }
+  function handleChipClick (tagObj: TagType) {
+    const location = props.selectedtagtypes.indexOf(tagObj)
+    if (location !== -1) {
+      const copy = [...props.selectedtagtypes]
+      copy.splice(location, 1)
+      context.emit('update:selectedtagtypes', copy)
     } else {
-      selectedTagTypes.value.push(tagObj)
+      context.emit('update:selectedtagtypes', [...props.selectedtagtypes, tagObj])
     }
   }
 
   function handleKeyDown (e: KeyboardEvent) {
     if (e.code === 'ArrowRight' || e.code === 'ArrowLeft' || e.code === 'Tab') {
-      if (hoveredTagType.value === undefined) {
-        hoveredTagType.value = 0
-      } else if (e.code === 'ArrowRight') {
-        hoveredTagType.value = (hoveredTagType.value + 1) % shownTagTypes.value.length
+      if (props.hoveredtagtype.name === 'default') {
+        console.log(shownTagTypes.value[0])
+        context.emit('update:hoveredtagtype', shownTagTypes.value[0])
+      } else if (e.code === 'ArrowRight' || e.code === 'Tab') {
+        context.emit('update:hoveredtagtype', shownTagTypes.value[(shownTagTypes.value.indexOf(props.hoveredtagtype) + 1) % shownTagTypes.value.length])
       } else if (e.code === 'ArrowLeft') {
-        hoveredTagType.value = Math.abs((hoveredTagType.value - 1) % shownTagTypes.value.length)
-      } else if (e.code === 'Tab') {
-        hoveredTagType.value = (hoveredTagType.value + 1) % shownTagTypes.value.length
+        context.emit('update:hoveredtagtype', shownTagTypes.value[Math.abs((shownTagTypes.value.indexOf(props.hoveredtagtype) - 1) % shownTagTypes.value.length)])
       }
     }
     if (e.key === 'Enter') {
-      if (hoveredTagType.value !== undefined) {
-        handleChipClick(hoveredTagType.value)
+      if (props.hoveredtagtype !== undefined) {
+        handleChipClick(props.hoveredtagtype)
       } else {
         if (inputField.value.length > 1) {
           createTag({ name: inputField.value })
@@ -49,9 +43,6 @@ export default function useTagTypeSearch () {
       }
     }
   }
-  function handleInput () {
-    hoveredTagType.value = undefined
-  }
 
-  return { inputField, handleInput, hoveredTagType, handleKeyDown, handleChipClick, selectedTagTypes, tagTypes, shownTagTypes }
+  return { inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes }
 }

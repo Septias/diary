@@ -1,9 +1,17 @@
 
 <template>
-  <mark :style="{background: tagData.shownTagType.color + 'a0'}">
+  <mark
+    class="mark"
+    :style="{background: tagData.shownTagType.color + 'a0'}"
+  >
     {{ content }}
   </mark>
 </template>
+
+<style lang="sass" scoped>
+.mark
+  cursor: pointer
+</style>
 
 <script lang="ts">
 import { defineComponent, PropType } from '@vue/composition-api'
