@@ -3,9 +3,7 @@
   <mark
     class="mark"
     :style="{background: tagData.shownTagType.color + 'a0'}"
-  >
-    {{ content }}
-  </mark>
+  >{{ content }}</mark>
 </template>
 
 <style lang="sass" scoped>

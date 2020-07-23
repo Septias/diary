@@ -83,7 +83,7 @@ export default defineComponent({
         const tag = new MarkClass({
           propsData: {
             tagData,
-            content: elem.innerHTML
+            content: elem.innerText
           }
         })
         tag.$mount(elem)
