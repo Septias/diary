@@ -8,16 +8,18 @@
     >
       {{ entry.time.toDate().toLocaleDateString() }}
     </h6>
-    <section
+
+    <q-editor
       id="oc-post"
-      v-outsideClick="{exclude: ['OCE-post'], handler: unselect}"
       v-if="entry.today"
-      contenteditable="true"
+      v-outsideClick="{exclude: ['OCE-post'], handler: unselect}"
+      v-model="entry.body"
+      :toolbar="[['bold','italic','underline']]"
       @focus="selected = true"
       @input="handleInput"
       @click="handleClick"
-      v-html="entry.body"
     />
+
     <section
       v-else
       v-html="entry.body"
@@ -67,10 +69,8 @@ export default defineComponent({
     function unselect () {
       selected.value = false
     }
-    const color = ref('#ff0000')
-
-    let timer: NodeJS.Timeout
     function handleClick () {
+      if (Date.now() > 0) return
       const sel = window.getSelection()
       if (sel && sel.type === 'Range') {
         const range = sel.getRangeAt(0)
@@ -93,16 +93,17 @@ export default defineComponent({
         })
       }
     }
-    function handleInput (e) {
-      if (e.target.innerText.length > 10) {
+    let timer: NodeJS.Timeout
+    function handleInput () {
+      if (props.entry.body.length > 10) {
         clearTimeout(timer)
         timer = setTimeout(() => {
-          context.emit('saveEntry', { ...props.entry, body: e.target.innerText })
+          context.emit('saveEntry', { ...props.entry, body: props.entry.body })
         }, 1500)
       }
     }
 
-    return { selected, unselect, handleInput, handleClick, color }
+    return { selected, unselect, handleInput, handleClick }
   }
 })
 </script>
