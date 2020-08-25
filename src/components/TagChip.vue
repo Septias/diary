@@ -1,6 +1,7 @@
 
 <template>
   <button
+    ref="button"
     class="chip"
     :style="border"
   >
@@ -10,20 +11,21 @@
 
 <style lang="sass">
 .chip
-  border: 3px solid
-  color: grey
+  border: none
+  color: hsl(0, 0%, 60%)
   border-radius: 8px
   display: inline-block
-  padding: 2px 4px
+  padding: 4px 8px
   cursor: pointer
+  font-weight: bold
 
 .body--dark .chip
-  background: #262626
+  background: #404040
   color: white
 </style>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from '@vue/composition-api'
+import { defineComponent, PropType, computed, watchEffect } from '@vue/composition-api'
 import { TagType } from '../services/TagTypeService'
 
 export default defineComponent({
@@ -41,14 +43,17 @@ export default defineComponent({
       const color = props.tag.color + 'b0'
       if (props.selected) {
         if (props.hover) {
-          return { 'border-color': `${color} ${color} #1010a0b0 ${color}` }
+          return { border: '1px solid', 'border-color': `${color} ${color} #1010a0b0 ${color}` }
         } else {
-          return { 'border-color': color }
+          return { border: '1px solid ' + color }
         }
       } else if (props.hover) {
-        return { 'border-color': '#1010a0b0' }
-      } else {
-        return { border: '1px solid gray' }
+        return { border: '1px solid #1010a0b0' }
+      }
+    })
+    watchEffect(function () {
+      if (props.hover) {
+        // context.refs.button.focus()
       }
     })
     return { border }

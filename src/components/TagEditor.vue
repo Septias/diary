@@ -1,45 +1,26 @@
 <template>
   <div
-    class="shadow-3 rounded q-pa-md tag-editor row no-wrap"
+    class="shadow-3 rounded-borders q-pa-md tag-editor"
   >
-    <div>
-      <input
-        id="search"
-        type="text"
-        class="q-mb-sm"
-        v-model="inputField"
-        @keydown="handleKeyDown"
-      >
-      <TagChip
-        class="tag-chip q-mr-sm"
-        v-for="(tag, i) in shownTagTypes"
-        :key="tag.name"
-        :tag="tag"
-        :hover="hoveredtagtype == tag"
-        :tabindex="i"
-        :selected="selectedtagtypes.find(_tag => _tag == tag)? true : false"
-        @click.native="() => {handleChipClick(tag)}"
-      />
-      <div />
-    </div>
-
-    <div
-      id="colorPicker"
-      :style="hoveredtagtype? {background: hoveredtagtype.color} : ''"
+    <input
+      id="search"
+      type="text"
+      v-model="inputField"
+      @keydown="handleKeyDown"
+      tabindex="1"
     >
-      <q-popup-edit
-        v-model="popup"
-      >
-        <q-color
-          class="OCE-tagEditor"
-          v-model="hex"
-          @change="(val) => {hoveredtagtype.setColor(val)}"
-          no-header
-          no-footer
-          default-view="palette"
-        />
-      </q-popup-edit>
-    </div>
+    <TagChip
+      class="q-mr-sm"
+      v-for="(tag, i) in shownTagTypes"
+      :key="tag.name"
+      :tag="tag"
+      :hover="hoveredtagtype == tag"
+      :tabindex="i + 2"
+      :selected="selectedtagtypes.find(_tag => _tag == tag)? true : false"
+      @keydown.native="handleKeyDown"
+      @click.native="() => {handleChipClick(tag)}"
+    />
+    <div />
   </div>
 </template>
 
@@ -48,17 +29,16 @@
 .body--dark .tag-editor
   background: #262626
 
-#colorPicker
-  min-width: 20px
-  height: 20px
-  margin-left: 7px
-  border-radius: 3px
-  float: right
-  border: 1px solid gray
+.tag-editor
+  background: white
 
 #search
   border: none
-  border-bottom: 1px solid gray
+  border-bottom: 2px solid hsl(0, 0%, 60%)
+  width: 100%
+  min-width: 150px
+  margin-bottom: 10px
+  font-size: 1.1rem
 
 .body--dark #search
   background: #262626
@@ -90,6 +70,7 @@ export default defineComponent({
     const popup = ref(true)
     const { inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes } = useTagTypesSearch(props, context)
     const hex = ref('')
+
     return { popup, hex, inputField, handleKeyDown, handleChipClick, tagTypes, shownTagTypes }
   }
 })

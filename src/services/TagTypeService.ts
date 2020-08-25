@@ -1,7 +1,11 @@
 import { ref, onMounted } from '@vue/composition-api'
-import { db } from './firebase'
-import * as firebase from 'firebase/app'
+import './fbapp'
+import firebase from 'firebase/app'
 import 'firebase/firestore'
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const db = firebase.firestore()
 
 type DocumentReference = firebase.firestore.DocumentReference
 type QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot
@@ -51,9 +55,9 @@ function createTag ({ name }) {
 export function useTagTypes () {
   if (tagTypes.value.length === 0) {
     onMounted(() => {
-      db.collection('tag-types').withConverter(tagTypeConverter).get().then(function (querySnapshot) {
+      db.collection('tag-types').withConverter(tagTypeConverter).get().then(function (querySnapshot: firebase.firestore.QuerySnapshot) {
         querySnapshot.forEach(function (doc) {
-          tagTypes.value.push(doc.data())
+          tagTypes.value.push(doc.data() as TagType)
         })
       })
     })

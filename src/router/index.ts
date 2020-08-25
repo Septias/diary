@@ -22,5 +22,21 @@ export default route<StoreInterface>(function ({ Vue }) {
     base: process.env.VUE_ROUTER_BASE
   })
 
+  Router.beforeEach((to, from, next) => {
+    const loggedIn = true
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+      if (!loggedIn) {
+        next({
+          path: '/login',
+          query: { next: to.path }
+        })
+      } else {
+        next()
+      }
+    } else {
+      next()
+    }
+  })
+
   return Router
 })

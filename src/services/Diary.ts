@@ -1,7 +1,10 @@
-import { db } from './firebase'
-import * as firebase from 'firebase/app'
+import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { ref } from '@vue/composition-api'
+import 'firebase/auth'
+import './fbapp'
+
+const db = firebase.firestore()
 
 type QueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot
 type DocumentReference = firebase.firestore.DocumentReference
@@ -15,6 +18,21 @@ interface Entry {
 }
 
 const entries = ref([] as Entry[])
+
+firebase.auth().onAuthStateChanged(function (user: any) {
+  if (user) {
+    db.collection('users').doc(user.uid).get().then(function (doc: any) {
+      if (doc.exists) {
+        entries.value = doc.data().entries
+      } else {
+        console.error('No Entries for user ', user.uid)
+      }
+    })
+  } else {
+    console.log('no User')
+    entries.value = []
+  }
+})
 
 async function fetchEntries () {
   const querySnapshot = await db.collection('entries').orderBy('time', 'desc').get()

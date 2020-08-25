@@ -49,7 +49,6 @@ import { defineComponent, ref } from '@vue/composition-api'
 import Mark from './Mark'
 import MarkData from './MarkData'
 import Vue from 'vue'
-import { defaultTag } from '../services/TagTypeService'
 
 const MarkClass = Vue.extend(Mark)
 
@@ -70,14 +69,13 @@ export default defineComponent({
       selected.value = false
     }
     function handleClick () {
-      if (Date.now() > 0) return
       const sel = window.getSelection()
       if (sel && sel.type === 'Range') {
         const range = sel.getRangeAt(0)
         const elem = document.createElement('div')
         range.surroundContents(elem)
         const tagData: MarkData = {
-          shownTagType: defaultTag,
+          shownTagType: undefined,
           tagTypes: []
         }
         const tag = new MarkClass({
@@ -87,6 +85,7 @@ export default defineComponent({
           }
         })
         tag.$mount(elem)
+        tagData.el = tag.$el
         context.emit('createdTag', tagData)
         tag.$el.addEventListener('click', () => {
           context.emit('selectedTag', tagData)
