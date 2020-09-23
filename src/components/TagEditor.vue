@@ -47,14 +47,13 @@
 
 <script lang="ts">
 import { ref, defineComponent, PropType } from '@vue/composition-api'
-import TagChip from './TagChip'
 import useTagTypesSearch from './useTagTypeSearch'
 import { TagType, defaultTag } from '../services/TagTypeService'
 
 export default defineComponent({
   name: 'TagEditor',
   components: {
-    TagChip
+    TagChip: require('src/components/TagChip.vue')
   },
   props: {
     hoveredtagtype: {

@@ -46,7 +46,7 @@
 <script lang="ts">
 import outsideClick from '../directives/outsideClick'
 import { defineComponent, ref } from '@vue/composition-api'
-import Mark from './Mark'
+import Mark from './Mark.vue'
 import MarkData from './MarkData'
 import Vue from 'vue'
 

@@ -1,6 +1,6 @@
 # Diary (diary)
 
-App to write and save advanced diary entries
+An App with which you can create diary entries. Don't download this it has no functionality.
 
 ## Install the dependencies
 ```bash

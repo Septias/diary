@@ -66,14 +66,12 @@ import Post from '../components/Post'
 import TagEditor from '../components/TagEditor'
 import { useDiary } from '../services/Diary'
 import useDarkMode from '../components/useDarkMode'
-import Mark from '../components/Mark'
 
 export default defineComponent({
   name: 'Diary',
   components: {
     Post,
-    TagEditor,
-    Mark
+    TagEditor
   },
   setup () {
     const { toggleDarkMode } = useDarkMode()
